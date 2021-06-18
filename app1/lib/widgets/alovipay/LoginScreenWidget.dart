@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app1/common/AlovipayConstants.dart';
 import 'package:app1/common/MyRoutes.dart';
 import 'package:app1/models/User.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> storeLoginPreference(User user, BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("token", user.token!);
-    await prefs.setBool("isLoggedIn", true);
+    await prefs.setString(AloviPaySharedPrefConstants.token, user.token!);
+    await prefs.setBool(AloviPaySharedPrefConstants.isLoggedIn, true);
     Navigator.pushNamedAndRemoveUntil(
         context, '/home', ModalRoute.withName('/'),
         arguments: user);

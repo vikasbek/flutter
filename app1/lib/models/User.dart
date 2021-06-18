@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-class User {
+import 'package:flutter/widgets.dart';
+
+class User with ChangeNotifier {
   String? username;
   String? email;
   String? password;

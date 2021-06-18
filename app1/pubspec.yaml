@@ -32,6 +32,7 @@ dependencies:
   logger: null
   url_strategy: ^0.2.0
   shared_preferences: ^2.0.6
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

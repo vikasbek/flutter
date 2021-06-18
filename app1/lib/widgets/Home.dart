@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,13 +18,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // List<String> items = List<String>();
 
-  setSocietiesInState(String value) {
-    final decodedData = jsonDecode(value);
-    Catalog.items = List.from(decodedData)
-        .map<SocietyInfoItemModel>((item) => SocietyInfoItemModel.fromMap(item))
-        .toList();
-    setState(() =>Catalog.items);
-  }
 
   @override
   void initState() {
@@ -35,14 +29,36 @@ class _HomeState extends State<Home> {
     final response = await http.get(Uri.parse(
         dotenv.env['BASE_URL']! + dotenv.env['SOCIETIES_LIST_GET_END_POINT']!));
     if (response.statusCode == 200) {
-      setSocietiesInState(response.body);
+      // setSocietiesInState(response.body);
+
+      final decodedData = jsonDecode(response.body);
+      final catalog = Provider.of<Catalog>(context);
+      catalog.items = List.from(decodedData)
+        .map<SocietyInfoItemModel>((item) => SocietyInfoItemModel.fromMap(item))
+        .toList();
+    // if(mounted){
+      setState(() {});
+      
+    // }
     } else {
       throw ("some arbitrary error");
     }
   }
 
+
+  // setSocietiesInState(String value) {
+  //   final decodedData = jsonDecode(value);
+  //   Catalog.items = List.from(decodedData)
+  //       .map<SocietyInfoItemModel>((item) => SocietyInfoItemModel.fromMap(item))
+  //       .toList();
+  //   // if(mounted){
+  //     setState(() =>Catalog.items);
+  //   // }
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final catalog = Provider.of<Catalog>(context);
     var bar = dotenv.env['APP_TITLE'];
     // Size _size = MediaQuery.of(context).size;
     return Scaffold(
@@ -70,9 +86,9 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: Catalog.items.isNotEmpty ? ListView.builder(
-        itemCount: Catalog.items.length,
-        itemBuilder: (context, index) => SocietyListItemWidget(item: Catalog.items[index]),
+      body: catalog.items.isNotEmpty ? ListView.builder(
+        itemCount: catalog.items.length,
+        itemBuilder: (context, index) => SocietyListItemWidget(item: catalog.items[index]),
       ): Center(
         child: CircularProgressIndicator(),
       )
