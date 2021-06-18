@@ -22,8 +22,8 @@ class _CommonMainAppState extends State<CommonMainApp> {
 
   @override
   void initState() {
-    loadAppLoadingPref();
     super.initState();
+    loadAppLoadingPref();
   }
 
   Future<void> loadAppLoadingPref() async {
@@ -44,7 +44,7 @@ class _CommonMainAppState extends State<CommonMainApp> {
       darkTheme: MyTheme.darkTheme(context),
       initialRoute: MyRoutes.firstPage,
       routes: {
-        MyRoutes.firstPage: (context) => !_isLoggedIn ? AnimatedSplashScreen(
+        MyRoutes.firstPage: (context) => AnimatedSplashScreen(
               splash: Image.asset(
                 'assets/images/alovi_pay800_px.png',
               ),
@@ -53,7 +53,7 @@ class _CommonMainAppState extends State<CommonMainApp> {
               nextScreen: LoginScreen(),
               splashTransition: SplashTransition.scaleTransition,
               splashIconSize: 400,
-            ) : Home(),
+            ),
         MyRoutes.homePage: (context) => Home(),
       },
     );
