@@ -1,8 +1,9 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:app1/common/MyRoutes.dart';
 import 'package:app1/models/User.dart';
+import 'package:app1/screens/main/ForgotPasswordScreen.dart';
+import 'package:app1/screens/main/SignUpScreen.dart';
 import 'package:app1/widgets/Home.dart';
-import 'package:app1/widgets/alovipay/LoginScreenWidget.dart';
+import 'package:app1/widgets/alovipay/AppLoadingSplashScreenWidget.dart';
 import 'package:app1/widgets/theme/MyTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -54,29 +55,12 @@ class _CommonMainAppState extends State<CommonMainApp> {
               routes: {
                   MyRoutes.firstPage: (context) => AppLoadingSplashScreen(),
                   MyRoutes.homePage: (context) => Home(),
+                  MyRoutes.signUpPage: (context) => SignUpScreen(),
+                  MyRoutes.forgotPasswordPage: (context) => ForgotPasswordScreen(),
+
               },
             ),
           ),
     );
-  }
-}
-
-class AppLoadingSplashScreen extends StatelessWidget {
-  const AppLoadingSplashScreen({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSplashScreen(
-          splash: Image.asset(
-            'assets/images/alovi_pay800_px.png',
-          ),
-          backgroundColor: Colors.blue.shade100,
-          duration: 1000,
-          nextScreen: LoginScreen(),
-          splashTransition: SplashTransition.scaleTransition,
-          splashIconSize: 400,
-        );
   }
 }

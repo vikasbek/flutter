@@ -27,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
     _formKey.currentState!.save();
 
     Future<User> futureUser = Future(() => getUserTokenApi(context));
-    
-    futureUser.then((value) {    
+
+    futureUser.then((value) {
       storeLoginPreference(value, context);
     });
   }
@@ -147,11 +147,64 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   ElevatedButton(
-                      onPressed: () => loginToHome(context),
-                      style: TextButton.styleFrom(),
-                      child: Text(
-                        'Login',
-                      ))
+                    onPressed: () => loginToHome(context),
+                    style: TextButton.styleFrom(),
+                    child: Text(
+                      'Login',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      //
+                      Navigator.pushNamed(context, MyRoutes.forgotPasswordPage);
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          color: Colors.orange.shade700, fontSize: 15),
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: new Container(
+                            margin:
+                                const EdgeInsets.only(left: 10.0, right: 20.0),
+                            child: Divider(
+                              color: Colors.orange,
+                              height: 36,
+                            )),
+                      ),
+                      Text("OR"),
+                      Expanded(
+                        child: new Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, right: 10.0),
+                          child: Divider(
+                            color: Colors.orange,
+                            height: 36,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      //
+                      Navigator.pushNamed(context, MyRoutes.signUpPage);
+                    },
+                    child: Text(
+                      'Having no account? Create an account',
+                      style: TextStyle(
+                          color: Colors.orange.shade700, fontSize: 15),
+                    ),
+                  ),
                 ],
               ),
             )
