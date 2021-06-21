@@ -1,11 +1,9 @@
-import 'dart:io';
 
-import 'package:app1/common/AlovipayConstants.dart';
 import 'package:app1/common/MyRoutes.dart';
-import 'package:app1/models/User.dart';
+import 'package:app1/models/Auth.dart';
+import 'package:app1/models/http_exception.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,70 +14,105 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _username, _password;
-  loginToHome(BuildContext context) {
+  String _username = '', _password = '';
+
+  loginToHome() async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      validateApiLogin(context);
-    }
-  }
+      _formKey.currentState!.save();
+      try {
+        await Provider.of<Auth>(context, listen: false).login(_username, _password);
+      } on HttpException catch (error) {
+        var errorMsg = error.message;
+        // _showErrorDialog(errorMsg);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$errorMsg')));
 
-  validateApiLogin(BuildContext context) async {
-    _formKey.currentState!.save();
+        // _showErrorDialog(errorMsg);
 
-    Future<User> futureUser = Future(() => getUserTokenApi(context));
-
-    futureUser.then((value) {
-      storeLoginPreference(value, context);
-    });
-  }
-
-  Future<void> storeLoginPreference(User user, BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AloviPaySharedPrefConstants.token, user.token!);
-    await prefs.setBool(AloviPaySharedPrefConstants.isLoggedIn, true);
-    Navigator.pushNamedAndRemoveUntil(
-        context, '/home', ModalRoute.withName('/'),
-        arguments: user);
-  }
-
-  Future<User> getUserTokenApi(BuildContext context) async {
-    User _user = User.nonParameterConstructor();
-    try {
-      String? username = _username;
-      String? password = _password;
-      final response = await http.post(
-        Uri.parse("https://reqres.in/api/login"),
-        body: {
-          'username': username,
-          'password': password,
-        },
-      );
-      switch (response.statusCode) {
-        case 200:
-          _user = User.fromJson(response.body);
-          Navigator.pushNamed(context, MyRoutes.homePage);
-          break;
-
-        case 400:
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Email/Mobile or password invalid !')));
-          break;
-        case 401:
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Access Denied !')));
-          break;
-        default:
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Something went wrong !')));
-          break;
+      } catch (error) {
+        // _showErrorDialog("Error ");
+        // _showErrorDialog("errorMsg");
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Could not authenticate you. Please try again later.')));
       }
-    } on SocketException {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error connecting to server !')));
     }
-    // return User(username: "username", email: "email", password: "password", token: "token");
-    return _user;
   }
+
+  // void _showErrorDialog(String errorMsg) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (ctx) => AlertDialog(
+  //       title: Text('An Error Occurred!'),
+  //       content: Text(errorMsg),
+  //       actions: <Widget>[
+  //         TextButton(
+  //           child: Text('Okay'),
+  //           onPressed: () {
+  //             Navigator.of(ctx).pop();
+  //           },
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Future<Auth> getUserTokenApi(BuildContext context) async {
+  //   Auth _user = Auth.nonParameterConstructor();
+  //   try {
+  //     String? username = _username;
+  //     String? password = _password;
+  //     final response = await http.post(
+  //       Uri.parse("https://reqres.in/api/login"),
+  //       body: {
+  //         'username': username,
+  //         'password': password,
+  //       },
+  //     );
+  //     switch (response.statusCode) {
+  //       case 200:
+  //         _user = Auth.fromJson(response.body);
+  //         Navigator.pushNamed(context, MyRoutes.homePage);
+  //         break;
+
+  //       case 400:
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text('Email/Mobile or password invalid !')));
+  //         break;
+  //       case 401:
+  //         ScaffoldMessenger.of(context)
+  //             .showSnackBar(SnackBar(content: Text('Access Denied !')));
+  //         break;
+  //       default:
+  //         ScaffoldMessenger.of(context)
+  //             .showSnackBar(SnackBar(content: Text('Something went wrong !')));
+  //         break;
+  //     }
+  //   } on SocketException {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Error connecting to server !')));
+  //   }
+  //   // return User(username: "username", email: "email", password: "password", token: "token");
+  //   return _user;
+  // }
+
+  // validateApiLogin(BuildContext context) async {
+  //   _formKey.currentState!.save();
+
+  //   Future<Auth> futureUser = Future(() => getUserTokenApi(context));
+
+  //   futureUser.then((value) {
+  //     storeLoginPreference(value, context);
+  //   });
+  // }
+
+  // Future<void> storeLoginPreference(Auth user, BuildContext context) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString(AloviPaySharedPrefConstants.token, user.token!);
+  //   await prefs.setBool(AloviPaySharedPrefConstants.isLoggedIn, true);
+  //   Navigator.pushNamedAndRemoveUntil(
+  //       context, '/home', ModalRoute.withName('/'),
+  //       arguments: user);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
-                    onSaved: (value) => _username = value,
+                    onSaved: (value) {
+                      _username = value!;
+                    },
                     decoration: InputDecoration(
                       hintText: "Enter Email/Mobile",
                       labelText: "Email/Mobile",
@@ -137,7 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
-                    onSaved: (value) => _password = value,
+                    onSaved: (value) {
+                      _password = value!;
+                    },
                     decoration: InputDecoration(
                       hintText: "Enter Password",
                       labelText: "Password",
@@ -147,7 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: () => loginToHome(context),
+                    onPressed: () {
+                      loginToHome();
+                    },
                     style: TextButton.styleFrom(),
                     child: Text(
                       'Login',

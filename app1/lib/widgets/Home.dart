@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:app1/models/Catalog.dart';
-import 'package:app1/models/SocietyInfoItemModel.dart';
 import 'package:app1/widgets/drawar/homeDrawar.dart';
 import 'package:app1/widgets/society/SocietyListWidget.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // List<String> items = List<String>();
 
-
   @override
   void initState() {
     super.initState();
@@ -32,19 +30,18 @@ class _HomeState extends State<Home> {
       // setSocietiesInState(response.body);
 
       final decodedData = jsonDecode(response.body);
-      final catalog = Provider.of<Catalog>(context);
-      catalog.items = List.from(decodedData)
-        .map<SocietyInfoItemModel>((item) => SocietyInfoItemModel.fromMap(item))
-        .toList();
-    // if(mounted){
-      setState(() {});
+      final catalog = Provider.of<Catalog>(context, listen: false);
+      catalog.setSocietyList(decodedData);
       
-    // }
+
+      // if(mounted){
+      // setState(() {});
+
+      // }
     } else {
       throw ("some arbitrary error");
     }
   }
-
 
   // setSocietiesInState(String value) {
   //   final decodedData = jsonDecode(value);
@@ -86,13 +83,15 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: catalog.items.isNotEmpty ? ListView.builder(
-        itemCount: catalog.items.length,
-        itemBuilder: (context, index) => SocietyListItemWidget(item: catalog.items[index]),
-      ): Center(
-        child: CircularProgressIndicator(),
-      )
-      ,
+      body: catalog.items.isNotEmpty
+          ? ListView.builder(
+              itemCount: catalog.items.length,
+              itemBuilder: (context, index) =>
+                  SocietyListItemWidget(item: catalog.items[index]),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

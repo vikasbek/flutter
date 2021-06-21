@@ -1,6 +1,8 @@
 import 'package:app1/common/MyRoutes.dart';
-import 'package:app1/models/User.dart';
+import 'package:app1/models/Auth.dart';
+import 'package:app1/models/Catalog.dart';
 import 'package:app1/screens/main/ForgotPasswordScreen.dart';
+import 'package:app1/screens/main/OtpVerificationScreen.dart';
 import 'package:app1/screens/main/SignUpScreen.dart';
 import 'package:app1/widgets/Home.dart';
 import 'package:app1/widgets/alovipay/AppLoadingSplashScreenWidget.dart';
@@ -37,30 +39,36 @@ class _CommonMainAppState extends State<CommonMainApp> {
 
   @override
   Widget build(BuildContext context) {
-    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value:User.nonParameterConstructor(),
+          value:Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Catalog>(
+          create: (context) {
+            return Catalog(
+                token: Provider.of<Auth>(context, listen: false).token);
+          },
+          update: (context, auth, catalog) => Catalog(token: auth.token),
         ),
       ],
-          child: Consumer<User>(
-            builder: (_, auth, __)=> MaterialApp(
-              title: dotenv.env['APP_TITLE']!,
-              debugShowCheckedModeBanner: false,
-              themeMode: ThemeMode.system,
-              theme: MyTheme.lightTheme(context),
-              darkTheme: MyTheme.darkTheme(context),
-              initialRoute: MyRoutes.firstPage,
-              routes: {
-                  MyRoutes.firstPage: (context) => AppLoadingSplashScreen(),
-                  MyRoutes.homePage: (context) => Home(),
-                  MyRoutes.signUpPage: (context) => SignUpScreen(),
-                  MyRoutes.forgotPasswordPage: (context) => ForgotPasswordScreen(),
-
-              },
-            ),
-          ),
+      child: Consumer<Auth>(
+        builder: (_, auth, __) => MaterialApp(
+          title: dotenv.env['APP_TITLE']!,
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.system,
+          theme: MyTheme.lightTheme(context),
+          darkTheme: MyTheme.darkTheme(context),
+          initialRoute: auth.isLoggedIn() ? MyRoutes.homePage: MyRoutes.firstPage,
+          routes: {
+            MyRoutes.firstPage: (context) => AppLoadingSplashScreen(),
+            MyRoutes.homePage: (context) => Home(),
+            MyRoutes.signUpPage: (context) => SignUpScreen(),
+            MyRoutes.forgotPasswordPage: (context) => ForgotPasswordScreen(),
+            MyRoutes.otpVerification: (context) => OtpVerificationScreen(),
+          },
+        ),
+      ),
     );
   }
 }

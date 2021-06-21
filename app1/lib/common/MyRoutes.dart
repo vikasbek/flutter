@@ -5,4 +5,5 @@ class MyRoutes {
   static String forgotPasswordPage = '/forgot';
   static String loginPage = '/login';
   static String logoutPage = '/logout';
+  static String otpVerification = "/otpVerify";
 }
